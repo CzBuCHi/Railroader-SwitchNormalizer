@@ -13,6 +13,8 @@ namespace SwitchNormalizer;
 [PublicAPI]
 public sealed class SwitchNormalizerPlugin(IModdingContext context, IUIHelper uiHelper) : SingletonPluginBase<SwitchNormalizerPlugin>
 {
+    private const string ModIdentifier = "CzBuCHi.SwitchNormalizer";
+
     private Messenger   _Messenger = null!;
     private Settings    _Settings  = null!;
     private TrackNode[] _Switches  = null!;
@@ -27,13 +29,13 @@ public sealed class SwitchNormalizerPlugin(IModdingContext context, IUIHelper ui
 
     private void OnMapDidLoad(MapDidLoadEvent @event) {
         TopRightAreaExtension.AddButton(OnButtonClick);
-        var settings = context.LoadSettingsData<Settings>("SwitchNormalizer") ?? new Settings();
-        _Settings = settings;
+        
+        _Settings = context.LoadSettingsData<Settings>(ModIdentifier) ?? new Settings();
         _Switches = Graph.Shared!.Nodes!.Where(Graph.Shared.IsSwitch).ToArray();
     }
 
     private void OnMapDidUnload(MapDidUnloadEvent obj) {
-        context.SaveSettingsData("SwitchNormalizer", _Settings);
+        context.SaveSettingsData(ModIdentifier, _Settings);
     }
 
     private void OnButtonClick(bool shiftKey) {
