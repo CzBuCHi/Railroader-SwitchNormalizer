@@ -7,6 +7,7 @@ using JetBrains.Annotations;
 using Railloader;
 using SwitchNormalizer.TopRightArea;
 using Track;
+using UnityEngine;
 
 namespace SwitchNormalizer;
 
@@ -28,7 +29,7 @@ public sealed class SwitchNormalizerPlugin(IModdingContext context, IUIHelper ui
     public override void OnDisable() => _Messenger.Unregister(this);
 
     private void OnMapDidLoad(MapDidLoadEvent @event) {
-        TopRightAreaExtension.AddButton(OnButtonClick);
+        TopRightAreaExtension.AddButton("icon.png", "Switch Normalizer", 9, OnButtonClick);
         
         _Settings = context.LoadSettingsData<Settings>(ModIdentifier) ?? new Settings();
         _Switches = Graph.Shared!.Nodes!.Where(Graph.Shared.IsSwitch).ToArray();
@@ -38,8 +39,8 @@ public sealed class SwitchNormalizerPlugin(IModdingContext context, IUIHelper ui
         context.SaveSettingsData(ModIdentifier, _Settings);
     }
 
-    private void OnButtonClick(bool shiftKey) {
-        if (shiftKey) {
+    private void OnButtonClick() {
+        if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)) {
             _Settings.ThrownSwitches = _Switches.Where(o => o.isThrown).Select(o => o.id).ToArray();
         } else {
             _Switches.Do(node => node.isThrown = _Settings.ThrownSwitches.Contains(node.id));
